@@ -8,7 +8,7 @@
             "console": "internalConsole",
             "mainClass": "fm.rabbitmq.kafka.connector.App",
             "projectName": "fm-rabbitmq-kafka-connector",
-            "args": "--spring.profiles.active=local"
+            "args": "--spring.profiles.active=debug"
         }
     ]
 }

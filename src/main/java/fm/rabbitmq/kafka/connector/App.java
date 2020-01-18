@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
+import org.springframework.context.annotation.Bean;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -21,16 +23,11 @@ public class App {
     }
 
     public static void main(String[] args) {
-        var ctx = SpringApplication.run(App.class, args);
-        
-        System.out.println("# Beans: " + ctx.getBeanDefinitionCount());
-        var names = ctx.getBeanDefinitionNames();
-        Arrays.sort(names);
-        Arrays.asList(names).forEach(System.out::println);
-
-
-        
-        
-
+        SpringApplication.run(App.class, args);
+        System.out.println("Applcaition started ....");
+    }
+    @Bean
+    public GrpcServiceConsulRegistrar consulRegistrarTest(ConsulServiceRegistry consulServiceRegistry){
+        return new GrpcServiceConsulRegistrar(consulServiceRegistry);
     }
 }
