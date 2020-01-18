@@ -1,0 +1,15 @@
+grpc:
+    port: 0
+    enableReflection: true
+
+spring: 
+  application:
+    name: fm-rabbitmq-kafka-connector
+  cloud:
+    consul:
+      discovery:
+        enabled: true
+        register: true
+      host: 192.168.8.6
+      port: 8500
+      enabled: true

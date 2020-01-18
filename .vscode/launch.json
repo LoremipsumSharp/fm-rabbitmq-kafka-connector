@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-App<fm-rabbitmq-kafka-connector>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "fm.rabbitmq.kafka.connector.App",
+            "projectName": "fm-rabbitmq-kafka-connector",
+            "args": "--spring.profiles.active=local"
+        }
+    ]
+}
