@@ -3,18 +3,9 @@
  */
 package fm.rabbitmq.kafka.connector;
 
-import java.util.Arrays;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
-import org.springframework.context.annotation.Bean;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterOuterClass.HelloReply;
-import io.grpc.examples.GreeterOuterClass.HelloRequest;
 
 @SpringBootApplication
 public class App {
@@ -23,11 +14,8 @@ public class App {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        var ctx = SpringApplication.run(App.class, args);
         System.out.println("Applcaition started ....");
-    }
-    @Bean
-    public GrpcServiceConsulRegistrar consulRegistrarTest(ConsulServiceRegistry consulServiceRegistry){
-        return new GrpcServiceConsulRegistrar(consulServiceRegistry);
+       // SpringApplication.exit(ctx); 
     }
 }

@@ -12,6 +12,8 @@ spring:
     consul:
       discovery:
         enabled: true
+        heartbeat: 
+          enabled: true
         register: false
         hostname: ${spring.cloud.client.ip-address}
       host: 192.168.8.6

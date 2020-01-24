@@ -1,8 +1,9 @@
-package fm.rabbitmq.kafka.connector;
+package fm.rabbitmq.kafka.connector.consul;
 
 import com.ecwid.consul.v1.agent.model.NewService;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
+import org.springframework.cloud.consul.discovery.HeartbeatProperties;
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
@@ -13,7 +14,6 @@ import org.springframework.context.event.EventListener;
 public class GrpcServiceConsulRegistrar implements SmartLifecycle {
 
     private final ConsulServiceRegistry consulServiceRegistry;
-
     private ConsulRegistration registration;
 
     public GrpcServiceConsulRegistrar(ConsulServiceRegistry consulServiceRegistry) {
@@ -24,11 +24,11 @@ public class GrpcServiceConsulRegistrar implements SmartLifecycle {
     public void onGrpcServerStarted(GRpcServerInitializedEvent initializedEvent) {
         registration = getRegistration(initializedEvent);
         consulServiceRegistry.register(registration);
+
     }
 
     private ConsulRegistration getRegistration(GRpcServerInitializedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
-
 
         ConsulDiscoveryProperties properties = applicationContext.getBean(ConsulDiscoveryProperties.class);
 
@@ -39,23 +39,33 @@ public class GrpcServiceConsulRegistrar implements SmartLifecycle {
         }
         String appName = ConsulAutoRegistration.getAppName(properties, applicationContext.getEnvironment());
         grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
-        grpcService.setId( ConsulAutoRegistration.getInstanceId(properties, applicationContext));
+        grpcService.setId(ConsulAutoRegistration.getInstanceId(properties, applicationContext));
 
-/*
-        service.setTags(createTags(properties));
-        setCheck(service, autoServiceRegistrationProperties, properties, context,
-                    heartbeatProperties);
+        NewService.Check check = new NewService.Check();
+        String tcp = String.join(":", properties.getHostname(), Integer.toString(event.getServer().getPort()));
+        check.setTcp(tcp);
+        check.setInterval("10s");
+        check.setTimeout("3s");
+        check.setDeregisterCriticalServiceAfter("30s");
+        grpcService.setCheck(check);
 
-
-
-
-
-        */
-
+        /*
+         * service.setTags(createTags(properties)); setCheck(service,
+         * autoServiceRegistrationProperties, properties, context, heartbeatProperties);
+         */
 
         return new ConsulRegistration(grpcService, properties);
     }
 
+    public static NewService.Check createCheck(Integer port, HeartbeatProperties ttlConfig,
+            ConsulDiscoveryProperties properties) {
+        NewService.Check check = new NewService.Check();
+        check.setInterval("10s");
+        check.setTimeout("3s");
+
+      
+        return check;
+    }
 
     @Override
     public boolean isAutoStartup() {
@@ -73,9 +83,8 @@ public class GrpcServiceConsulRegistrar implements SmartLifecycle {
 
     }
 
-    @Override
+    // @Override
     public synchronized void stop() {
-
         consulServiceRegistry.deregister(registration);
         consulServiceRegistry.close();
         registration = null;
